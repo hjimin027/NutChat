@@ -6,6 +6,7 @@
     <title>NutChat</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=send" />
 
     <script type="importmap">
         {
@@ -16,6 +17,28 @@
     </script>
 </head>
 <body>
-    
+    <div id="appContainer">
+        <header>영양&식단봇</header>
+    </div>
+
+    <main id="chatInterface">
+        <div id="chatOutput" role="log">
+            <!-- 채팅이 표시되는 곳 -->
+            <div class="msg-default">
+                <p>안녕하세요! 어떤 음식을 드셨는지 알려주세요 (예: 사과 1개, 삶은 달걀 2개)</p>
+            </div>
+        </div>
+        <div id="chatInput">
+            <textarea id="msgInput" placeholder="예: 사과 1개, 밥 반 공기" rows="3"></textarea>
+            <button id="sendButton">
+                <span class="material-symbols-outlined">send</span>
+            </button>
+
+        </div>
+    </main>
+    <footer>
+        <p>Powered by Gemini &amp; 대한민국 공공데이터포털 식품영양DB</p>
+    </footer>
+    <script type="module" src="main.tsx"></script>
 </body>
 </html>
