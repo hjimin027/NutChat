@@ -1,0 +1,209 @@
+/* 제목 - 꾸불림체 */
+@font-face {
+    font-family: 'BMkkubulimTTF-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410-1@1.0/BMkkubulimTTF-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+/* 본문 - 프리텐다드 */
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Pretendard-Regular', sans-serif;
+    margin: 0;
+    background-color: #ffffff;
+    color: #333333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#appContainer {
+    width: 100%;
+    max-width: 800px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: calc(100vh - 40px);
+    max-height: 900px;
+}
+
+/* 영양&식단봇 */
+header {
+    background-color: rgb(64, 86, 79);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-family: 'BMkkubulimTTF-Regular', cursive;
+    font-size: 24px;
+}
+h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* 채팅 */
+#chatInterface {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+#chatOutput {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #ffffff;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* 사용자 채팅 */
+.user-msg {
+    background-color: #4b666a;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+/* 봇 채팅 */
+.bot-msg {
+    background-color: #e0f7fa;
+    color: #333333;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.bot-msg .initial-bot-msg {
+    background-color: #649fdb;
+    border: 1px solid #4b666a;
+}
+
+.bot-error-msg {
+    background-color: #ffcccc;
+    color: #d8000c;
+    border: 1px solid #d8000c;
+    align-self: stretch;
+    max-width: 100%;
+}
+
+/* 봇 채팅 스타일 */
+/* 채워넣기******************* */
+
+
+/* 입력 */
+#chatInput {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #afafaf;
+    background-color: #ededed;
+}
+
+#msgInput {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border-radius: 22px;
+    border: 1px solid #ccc;
+    font-family: 'Pretendard-Regular', sans-serif;
+    font-size: 1em;
+    resize: none;
+    margin-right: 10px;
+    min-height: 24px;
+    max-height: 100px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+#msgInput:focus {
+    outline: none;
+    border-color: #4b666a;
+    box-shadow: 0 0 0.2rem rgba(75, 102, 106, 0.5);
+}
+
+#sendButton {
+    background-color: #4b666a;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+#sendButton:hover {
+    background-color: #314547;
+}
+
+#sendButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+/* footer */
+footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.8em;
+    color: #666666;
+    border-top: 1px solid #ccc;
+}
+
+/* 스크롤 */
+#chatOutput::-webkit-scrollbar {
+    width: 8px;
+}
+#chatOutput::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+#chatOutput::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    #appContainer {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+    }
+    header {
+        font-size: 1.5em;
+    }
+    #msgInput {
+        min-height: 36px;
+        max-height: 80px;
+    }
+    #sendButton {
+        width: 40px;
+        height: 40px;
+    }
+}
