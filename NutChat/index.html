@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutChat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: rgb(74, 47, 41);
+            color: white;
+            padding: 16px 24px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #e0e7ff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .bot-message {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            background-color: #ffffff;
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 24px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .chat-input:focus {
+            border-color: rgb(74, 47, 41);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+        .send-button {
+            background-color: rgb(74, 47, 41);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .send-button:hover {
+            background-color: #6056ca;
+            transform: translateY(-1px);
+        }
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        /* 스크롤바 스타일링 */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .choose-button {
+            background-color: rgb(208, 200, 198);
+            padding: 5px 10px;
+            margin: 3px 3px;
+            border-radius: 8px;
+            font-size: small;
+        }
+        .choose-button:hover {
+            background-color: rgb(74, 47, 41);
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            🌰 NutChat
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="message-bubble bot-message">
+                안녕하세요! 드신 음식을 입력해주세요. <br>
+                예시: 사과 1개, 달걀 2개, 돼지고기 (삼겹살, 구이) 150g
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" class="chat-input" placeholder="드신 음식을 입력하세요">
+            <button id="send-button" class="send-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.542 60.542 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.542 60.542 0 0 0 3.478 2.405Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        // 메시지를 채팅창에 추가하는 함수
+        function appendMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message-bubble');
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else {
+                messageDiv.classList.add('bot-message');
+                // 봇 메시지는 마크다운을 HTML로 변환합니다.
+                // marked.parse() 함수를 사용하여 텍스트 내의 마크다운을 HTML로 변환합니다.
+                text = marked.parse(text); 
+            }
+            // 줄바꿈은 marked.js가 처리해 주므로, 따로 replace 할 필요가 없습니다.
+            messageDiv.innerHTML = text; 
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // 스크롤을 항상 아래로
+        }
+
+        let pendingCandidates = []; // [{food_name, candidates}]
+        let selectedFoods = {};     // {food_name: 선택된 후보명}
+        let parsedFoodList = [];    // [{name, quantity, unit, quantity_g}]
+
+        function showCandidates(candidatesArr, parsedList) {
+            pendingCandidates = candidatesArr;
+            parsedFoodList = parsedList || parsedFoodList;
+            selectedFoods = {}; // 초기화
+
+            candidatesArr.forEach(obj => {
+                let html = `<b>입력하신 "${obj.food_name}"에 대해 후보가 있습니다. 선택해 주세요:</b><br>`;
+                obj.candidates.forEach((c, idx) => {
+                    html += `<button class="choose-button" onclick="selectCandidate('${obj.food_name}', '${c.replace(/'/g, "\\'")}')">${c}</button>`;
+                });
+                appendMessage('bot', html);
+            });
+        }
+
+        // 후보 선택시 선택값 저장, 모두 선택되면 서버로 전송
+        window.selectCandidate = async function(foodName, selected) {
+            selectedFoods[foodName] = selected;
+
+            // 모든 음식 후보가 선택되었는지 확인
+            if (Object.keys(selectedFoods).length === pendingCandidates.length) {
+                appendMessage('bot', '계산중입니다...');
+
+                // 각 음식별 quantity_g 등 정보도 함께 전송
+                const foodsToSend = pendingCandidates.map(obj => {
+                    const parsed = parsedFoodList.find(f => f.name === obj.food_name);
+                    return {
+                        name: selectedFoods[obj.food_name],
+                        quantity_g: parsed ? parsed.quantity_g : 100
+                    };
+                });
+
+                const payload = { selected_foods: foodsToSend };
+                const response = await fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    appendMessage('bot', `오류: ${data.error}`);
+                } else {
+                    let nutritionText = `<span style="font-size:1.2rem; font-weight:bold;">--- 총 계산된 영양성분 ---</span>\n\n`;
+                    for (const key in data.calculated_nutrition) {
+                        nutritionText += `${key}: ${data.calculated_nutrition[key].toFixed(2)}\n\n`;
+                    }
+                    nutritionText += `<br>\n<span style="font-size:1.2rem; font-weight:bold;">--- 식단 조언 ---</span>\n\n`;
+                    nutritionText += data.dietary_advice;
+                    appendMessage('bot', nutritionText);
+                }
+                // 초기화
+                pendingCandidates = [];
+                selectedFoods = {};
+                parsedFoodList = [];
+            } else {
+                appendMessage('bot', `✅ "${foodName}" 후보가 선택되었습니다. 나머지 음식도 선택해 주세요.`);
+            }
+        }
+
+        // 메시지 전송 함수 수정
+        async function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage('user', userMessage);
+            userInput.value = '';
+
+            try {
+                const payload = { message: userMessage };
+                const response = await fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+
+                if (data.select_candidates) {
+                    showCandidates(data.select_candidates, data.parsed_food_list);
+                    return;
+                }
+
+                if (data.error) {
+                    appendMessage('bot', `오류: ${data.error}`);
+                } else {
+                    let nutritionText = `<span style="font-size:1.2rem; font-weight:bold;">--- 총 계산된 영양성분 ---</span>\n\n`;
+                    for (const key in data.calculated_nutrition) {
+                        nutritionText += `${key}: ${data.calculated_nutrition[key].toFixed(2)}\n\n`;
+                    }
+                    nutritionText += `<br>\n<span style="font-size:1.2rem; font-weight:bold;">--- 식단 조언 ---</span>\n\n`;
+                    nutritionText += data.dietary_advice;
+                    appendMessage('bot', nutritionText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                appendMessage('bot', '죄송합니다. 서버와 통신 중 오류가 발생했습니다. 서버가 실행 중인지 확인해주세요.');
+            }
+        }
+
+        // 이벤트 리스너
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
